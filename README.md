@@ -1,4 +1,4 @@
-ldap-classes-php
+ldaphp classes Project
 ================
 
 Two PHP classes about LDAP (OpenLDAP or ActiveDirectory) requests and useful functions (specifics passwords, simple rights system, ...)
