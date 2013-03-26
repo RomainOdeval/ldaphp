@@ -4,8 +4,11 @@ ldaphp classes Project
 Three PHP classes about LDAP (OpenLDAP or ActiveDirectory) requests and useful functions (specifics passwords, simple rights system, ...)
 
 -> "ConnexionLDAP.class.php" is about LDAP connection and optional parameters.
+
 -> "Ldap.class.php" is about LDAP requests and data formatting.
+
 -> "Identification.class.php" is about based-LDAP authentification for PHP applications. In the future, an CAS authentification will be added.
+
 
 Copyright (C) 2013  Romain Odeval
 
