@@ -95,9 +95,9 @@ class Ldap {
         }
         $attribs = array("member");
         if (isset($nom_droit) && $nom_droit != '' && $nom_droit != NULL) {
-            $this->resultset = ldap_search($this->connect, "ou=" . $nom_applicatif . ',ou=Applications,' . $this->baseDN, $filter, $attribs);
+            $this->resultset = ldap_search($this->connect, "ou=" . $nom_applicatif . ',' . self::RDN_APPS . ',' . $this->baseDN, $filter, $attribs);
         } else {
-            $this->resultset = ldap_search($this->connect, 'ou=Applications,' . $this->baseDN, $filter, $attribs);
+            $this->resultset = ldap_search($this->connect, self::RDN_APPS . ',' . $this->baseDN, $filter, $attribs);
         }
         return ldap_get_entries($this->connect, $this->resultset);
     }
@@ -112,7 +112,7 @@ class Ldap {
 
         $filter = "ou=admin";
         $attribs = array("member");
-        $this->resultset = ldap_search($this->connect, 'ou=' . $nom_applicatif . ',ou=Applications,' . $this->baseDN, $filter, $attribs);
+        $this->resultset = ldap_search($this->connect, 'ou=' . $nom_applicatif . ',' . self::RDN_APPS . ',' . $this->baseDN, $filter, $attribs);
         return ldap_get_entries($this->connect, $this->resultset);
     }
 
@@ -146,7 +146,7 @@ class Ldap {
     public function searchInfosIndividu($cn) {
         $filter = "cn=" . $cn . "";
         $attribs = array("cn", "sn", "givenName", "employeeNumber", "businessCategory", "employeeType", "mailLocalAddress", "roomNumber", "userPassword");
-        $this->resultset = ldap_search($this->connect, 'ou=Utilisateurs,' . $this->baseDN, $filter, $attribs);
+        $this->resultset = ldap_search($this->connect, self::RDN_USERS . ',' . $this->baseDN, $filter, $attribs);
         $recherche = ldap_get_entries($this->connect, $this->resultset);
 
         if ($recherche['count'] == 0) { // Premier cas : la recherche a fonctionnée mais elle ne renvoie aucun résultat
@@ -190,13 +190,14 @@ class Ldap {
     public function genererCN($nom, $prenom) {
         if (!isset($nom) || !isset($prenom) || $nom != '' || $prenom != '') {
             $cn = $nom . " " . $prenom;
+            $cn_final = $cn;
             $i = 1;
-            while ($this->searchInfosIndividu($cn) != 0) {
+            while ($this->searchInfosIndividu($cn_final) != 0) {
 
                 $i++;
-                $cn = $cn . " (" . $i . ")";
+                $cn_final = $cn . " " . $i . "";
             }
-            return $cn;
+            return $cn_final;
         } else {
             $_SESSION['error'] = "Le prénom ou le nom sont manquants. Arrêt de la génération du CN.";
             return false;
