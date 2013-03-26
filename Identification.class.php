@@ -58,7 +58,7 @@ class Identification {
                 // Sélection du type de recherche : droits d'accès (==0) ou droits d'administration (==1)
                 // REM : On n'utilise pas de booléens dans le cas où on voudrait rajouter un jour d'autres types de droit (gestion, ...)
                 //@TODO gérer proprement le nom des droits dans le reste de la fonction
-                $adresse_cn_ldap = 'cn=' . $tab_ldap_utilisateur['cn'] . ',ou=Utilisateurs,' . $ldap_verif_droit->getBaseDN();
+                $adresse_cn_ldap = 'cn=' . $tab_ldap_utilisateur['cn'] . ',' . Ldap::RDN_USERS . ',' . $ldap_verif_droit->getBaseDN();
                 $validation = 0;
                 $nom_droit = NULL;
 
