@@ -10,7 +10,7 @@ class Ldap {
 
     const RDN_USERS = "ou=people";
     const RDN_APPS = "ou=applications";
-    const RDN_GROUPES = "ou=Groups";
+    const RDN_GROUPES = "ou=groups";
 
     private $baseDN;
     private $connect;
