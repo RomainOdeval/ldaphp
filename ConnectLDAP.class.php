@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Description of ConnexionLDAP
+ * ConnectLDAP class
  *
  * @author Romain Odeval
  * Manage LDAP connections
