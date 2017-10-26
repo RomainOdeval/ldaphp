@@ -4,12 +4,18 @@
  * Authentication class
  *
  * @author Romain Odeval
+ *
  * Test if an user has rights for an application.
- * Rights are read from a MySQL databse or a LDAP directory.
+ * Rights are read from a SQL databse or a LDAP directory.
  */
 class Authentication {
 
-    public static function hasRightMysql($uid) {
+    /**
+     *
+     * @param string $uid
+     * @return boolean
+     */
+    public static function hasRightSql($uid) {
         if (!is_null($uid) && !empty($uid)) {
             $group = new Group();
             $result = $group->getGroup($uid);
@@ -37,6 +43,7 @@ class Authentication {
      * @param string $uid
      * @param string $nom_applicatif optional
      * @param int $admin optional
+     * @return boolean
      */
     public static function hasRightLdap($uid, $nom_applicatif = null, $admin = 0) {
         $tableau_droits = array();
