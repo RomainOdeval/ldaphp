@@ -4,7 +4,7 @@
  * Description of Ldap
  *
  * @author Romain Odeval
- * Manage LDAP requests and user authentification (with Identification.class.php)
+ * Manage LDAP requests and user authentification (with Authentication.class.php)
  */
 class Ldap {
 
@@ -19,20 +19,17 @@ class Ldap {
     private $apMdp;
 
     /**
-     * mode de débogage
+     * Debug Mode
      * @var boolean
      */
     private $debugLdapMode = false;
 
     /**
-     * texte de débogage
+     * Text from debug
      * @var string
      */
     private $debugLdapText;
 
-    /**
-     * Constructeur
-     */
     public function __construct($lienVersLDAP, $DNconnexion) {
         if (!is_null($lienVersLDAP) && !empty($lienVersLDAP) && !is_null($DNconnexion) && !empty($DNconnexion)) {
             $this->connect = $lienVersLDAP;
@@ -46,10 +43,6 @@ class Ldap {
         }
     }
 
-    /**
-     * Retourne le texte de débogage
-     * @return string
-     */
     public function getDebugLDAPText() {
         return $this->debugLdapText;
     }
@@ -99,20 +92,6 @@ class Ldap {
         } else {
             $this->resultset = ldap_search($this->connect, self::RDN_APPS . ',' . $this->baseDN, $filter, $attribs);
         }
-        return ldap_get_entries($this->connect, $this->resultset);
-    }
-
-    /**
-     * recherche des autorisations d'administration pour un applicatif
-     * @param string $nom_applicatif
-     * @return arraylist
-     */
-    // @TODO fonction gardée pour rétro-compatabilité. A supprimer quand les outils auront été mis à jour
-    public function searchAutorisationsAdminApplicatif($nom_applicatif) {
-
-        $filter = "ou=admin";
-        $attribs = array("member");
-        $this->resultset = ldap_search($this->connect, 'ou=' . $nom_applicatif . ',' . self::RDN_APPS . ',' . $this->baseDN, $filter, $attribs);
         return ldap_get_entries($this->connect, $this->resultset);
     }
 
@@ -187,7 +166,7 @@ class Ldap {
      * @param string $nom
      * @param string $prenom
      */
-    public function genererCN($nom, $prenom) {
+    public function generateCN($nom, $prenom) {
         if (!isset($nom) || !isset($prenom) || $nom != '' || $prenom != '') {
             $cn = $nom . " " . $prenom;
             $cn_final = $cn;
@@ -230,6 +209,7 @@ class Ldap {
      * @param string $ou arborescence
      * @param array $donnees données
      * @param string $option
+     * @return boolean
      */
     public function insertLDAP($ou, $donnees, $option = 'entree') {
 
@@ -255,6 +235,7 @@ class Ldap {
      *
      * @param string $ou arborescence
      * @param array $entree données
+     * @return boolean
      */
     public function deleteLDAP($ou, $entree = '') {
 
@@ -274,7 +255,7 @@ class Ldap {
     }
 
     /**
-     * authentification d'une personne
+     * LDAP user Authentication
      * @param string $uid
      * @param string $userPassword
      * @param string $nom_applicatif optional
@@ -294,7 +275,7 @@ class Ldap {
             return true;
         } else {
             // On vérifie les informations d'identification
-            if (Identification::hasRightLdap($uid, $nom_applicatif, $admin)) {
+            if (Authentication::hasRightLdap($uid, $nom_applicatif, $admin)) {
                 if (!is_null($this->connect)) {
                     $cn_individu = $this->searchUid($uid);
                     $infos_individu = $this->searchInfosIndividu($cn_individu['cn']);
@@ -443,26 +424,27 @@ class Ldap {
         }
 
         // Mise en forme dans un tableau compréhensif (en français)
-        $donnees = array();
-        $donnees["uid"] = $uid;
-        $donnees["mdp"] = $userPassword;
-        $donnees["cn"] = $cn;
-        $donnees["email"] = $mail;
-        $donnees["allMail"] = $allMail;
-        $donnees["geoloc"] = $room;
-        $donnees["prenom"] = $givenName;
-        $donnees["nom"] = $sn;
-        $donnees["employeeNumber"] = $employeeNumber;
-        $donnees["employeeType"] = $employeeType;
-        $donnees["businessCategory"] = $idTypeIndividu;
+        $data = array();
+        $data["uid"] = $uid;
+        $data["mdp"] = $userPassword;
+        $data["cn"] = $cn;
+        $data["email"] = $mail;
+        $data["allMail"] = $allMail;
+        $data["geoloc"] = $room;
+        $data["prenom"] = $givenName;
+        $data["nom"] = $sn;
+        $data["employeeNumber"] = $employeeNumber;
+        $data["employeeType"] = $employeeType;
+        $data["businessCategory"] = $idTypeIndividu;
 
-        return $donnees;
+        return $data;
     }
 
     /**
      * permet de déboguer facilement les requetes LDAP en voyant le type d'erreur renvoyé par l'annuaire
      * @param string $query
      * @param string $type
+     * @return string
      */
     private function debugLDAP($lienLDAP, $type) {
         $num_erreur_ldap = "";
@@ -475,7 +457,7 @@ class Ldap {
                 $this->debugLdapText .= " - erreur n°" . $num_erreur_ldap . " : " . $texte_erreur_ldap;
             }
             $this->debugLdapText .="<br />";
-            echo $this->debugLdapText;
+            return $this->debugLdapText;
         }
     }
 
