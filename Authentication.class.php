@@ -1,12 +1,13 @@
 <?php
 
 /**
- * Description of Identification
+ * Authentication class
  *
  * @author Romain Odeval
- * vérification des droits utilisateur sur un applicatif dans mysql ou ldap
+ * Test if an user has rights for an application.
+ * Rights are read from a MySQL databse or a LDAP directory.
  */
-class Identification {
+class Authentication {
 
     public static function hasRightMysql($uid) {
         if (!is_null($uid) && !empty($uid)) {
@@ -39,7 +40,7 @@ class Identification {
      */
     public static function hasRightLdap($uid, $nom_applicatif = null, $admin = 0) {
         $tableau_droits = array();
-        $ldap_verif_droit = new ConnexionLDAP(1);
+        $ldap_verif_droit = new ConnectLDAP(1);
         if ($ldap_verif_droit->connect()) {
             $requete_ldap = new Ldap($ldap_verif_droit->getConnect(), $ldap_verif_droit->getBaseDN());
             $tab_ldap_utilisateur = $requete_ldap->searchUid($uid);
@@ -50,12 +51,12 @@ class Identification {
                     $ldap_verif_droit->close();
                     return true;
                 } else {
-                    $_SESSION['error_right_ldap'] = "Ce compte n'existe pas dans l'annuaire LDAP";
+                    $_SESSION['error_right_ldap'] = "This account doesn't exist in this LDAP directory";
                     return false;
                 }
             } else {
                 // Cas 2 : Droit de connexion lié à un applicatif
-                // Sélection du type de recherche : droits d'accès (==0) ou droits d'administration (==1)
+                // Select type of search : access rights (==0) ou admin rights (==1)
                 // REM : On n'utilise pas de booléens dans le cas où on voudrait rajouter un jour d'autres types de droit (gestion, ...)
                 //@TODO gérer proprement le nom des droits dans le reste de la fonction
                 $adresse_cn_ldap = 'cn=' . $tab_ldap_utilisateur['cn'] . ',' . Ldap::RDN_USERS . ',' . $ldap_verif_droit->getBaseDN();
@@ -93,7 +94,7 @@ class Identification {
                 }
             }
         } else {
-            $_SESSION['error_right_ldap'] = "Connexion à l'annuaire LDAP impossible";
+            $_SESSION['error_right_ldap'] = "Unable to connect to LDAP directory";
             return false;
         }
     }
