@@ -77,8 +77,8 @@ class ConnectLDAP {
     }
 
     /**
-     * connexion à l'annuaire ldap
-     * @return boolean vrai si la connexion est valide et authentifiée
+     * LDAP directory connection
+     * @return boolean true if valid and authentified
      */
     public function connect() {
         $this->connect = ldap_connect($this->protocol . $this->ldapServer . ":" . $this->ldapServerPort, $this->ldapServerPort);
