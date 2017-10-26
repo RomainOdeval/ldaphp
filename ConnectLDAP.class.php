@@ -6,7 +6,7 @@
  * @author Romain Odeval
  * Manage LDAP connections
  */
-class ConnexionLDAP {
+class ConnectLDAP {
 
     private $baseDN;
     private $ldapServer;
